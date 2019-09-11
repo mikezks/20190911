@@ -1,4 +1,10 @@
-import { Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, NgModuleFactory } from '@angular/core';
+import { Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, NgModuleFactory, Optional, Compiler } from '@angular/core';
+
+export const lazyModules = {
+    tile: {
+        loadChildren: () => import('../lazy-dashboard-tile/lazy-dashboard-tile.module').then(m => m.LazyDashboardTileModule)
+    }
+};
 
 @Injectable({
     providedIn: 'root'
@@ -7,7 +13,8 @@ export class LazyDashboardTileService  {
 
     constructor(
         private loader: NgModuleFactoryLoader,
-        private injector: Injector
+        private injector: Injector,
+        @Optional() private compiler: Compiler
     ) {
     }
 
@@ -32,6 +39,25 @@ export class LazyDashboardTileService  {
                 console.error('error loading module', err); 
             });
         
+    }
+
+    loadDynImport() {
+
+        if (this.moduleRef) {
+            return Promise.resolve();
+        }
+
+        return lazyModules['tile'].loadChildren()
+            .then(moduleOrFactory => {
+                if (moduleOrFactory instanceof NgModuleFactory) {
+                    return moduleOrFactory;
+                } else {
+                    return this.compiler.compileModuleAsync(moduleOrFactory);
+                }
+            })
+            .then(factory => {
+                this.moduleRef = factory.create(this.injector).instance as unknown as NgModuleRef<any>;
+            });
     }
 }
  

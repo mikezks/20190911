@@ -50,6 +50,12 @@ export class DashboardPageComponent {
 		});
 	}
 
+	addLazyDynImport(): void {
+		this.lazyService.loadDynImport().then(_ => {
+			this._add('lazy-dashboard-tile');
+		});
+	}
+
 	addExternal(): void {
 		this.externalService.load();
 		this._add('external-dashboard-tile');

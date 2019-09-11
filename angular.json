@@ -162,8 +162,7 @@
               "projects/flight-app/src/assets/css/themify-icons.css"
             ],
             "scripts": [],
-            "preserveSymlinks": true,
-            "lazyModules": []
+            "preserveSymlinks": true
           },
           "configurations": {
             "production": {
@@ -431,7 +430,10 @@
             "styles": [
               "projects/dashboard/src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "lazyModules": [
+              "projects/dashboard/src/app/lazy-dashboard-tile/lazy-dashboard-tile.module"
+            ]
           },
           "configurations": {
             "production": {
