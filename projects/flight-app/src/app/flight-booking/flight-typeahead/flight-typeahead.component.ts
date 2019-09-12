@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { timer, Subscription, Observable } from 'rxjs';
-import { take, tap, share, debounceTime, filter, switchMap } from 'rxjs/operators';
+import { timer, Subscription, Observable, interval, combineLatest, iif, of } from 'rxjs';
+import { take, tap, share, debounceTime, filter, switchMap, startWith, map, distinctUntilChanged } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { Flight } from '@flight-workspace/flight-api';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
@@ -17,7 +17,9 @@ export class FlightTypeaheadComponent implements OnInit {
   control = new FormControl();
   flights$: Observable<Flight[]>;
   loading: boolean;
-
+  online$: Observable<boolean>;
+  online: boolean;
+  
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
@@ -41,17 +43,38 @@ export class FlightTypeaheadComponent implements OnInit {
   initTypeahead(): void {
     this.control = new FormControl();
 
-    //this.flights$ =
+    this.online$ =
+      interval(2000)
+        .pipe(
+          startWith(0),
+          map(x => Math.random() < 0.5),
+          distinctUntilChanged(),
+          tap(x => this.online = x)
+        );
+
+    this.flights$ =
       this.control
         .valueChanges
         .pipe(
+          value => combineLatest(value, this.online$),
+          filter(([value, online]) => online),
+          map(([value, online]) => value),
+          distinctUntilChanged(),
           debounceTime(300),
-          filter((value: string) => value.length > 2),
-          tap(() => this.loading = true),
-          switchMap(from => this.load(from)),
-          tap(() => this.loading = false)
-        )
-        .subscribe(console.log);
+          //filter((value: string) => value.length > 2),
+          switchMap(value =>
+            iif(
+              () => value.length > 2,
+              of(value)
+                .pipe(
+                  tap(() => this.loading = true),
+                  switchMap(from => this.load(value)),
+                  tap(() => this.loading = false)
+                ),
+              of([])
+            )
+          )          
+        );
   }
 
   load(from: string): Observable<Flight[]>  {
