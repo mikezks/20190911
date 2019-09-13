@@ -7,6 +7,7 @@ import {Component, OnInit, ViewEncapsulation} from '@angular/core';
   encapsulation: ViewEncapsulation.None
 })
 export class PassengerSearchComponent implements OnInit {
+  activePane = 1;
 
   constructor() {
   }

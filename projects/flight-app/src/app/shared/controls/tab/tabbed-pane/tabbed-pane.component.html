@@ -1,0 +1,8 @@
+<div style="background-color: moccasin; padding: 20px">
+  <div>
+    <span *ngFor="let tab of tabs">
+      <a (click)="jump(tab.id)">{{ tab.title }}</a> |
+    </span>
+  </div>
+  <ng-content></ng-content>
+</div>

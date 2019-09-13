@@ -1,3 +1,13 @@
-<p>
-  passenger-search works!
-</p>
+<tabbed-pane [(activeId)]="activePane">
+  <tab title="Booked" [id]="1">
+    Passagiere mit gebuchten Flügen.
+  </tab>
+  <tab title="Checked in" [id]="2">
+    Passagiere, die bereits da sind.
+  </tab>
+  <tab title="Boarded" [id]="3">
+    Passagiere, die bereits im Flieger sind.
+  </tab>
+</tabbed-pane>
+
+Active Pane: {{ activePane }}
