@@ -43,7 +43,7 @@ import { AppEffects } from "./+state/effects/app.effects";
       }
     }),
     EffectsModule.forRoot([AppEffects]),
-    !environment.production ? StoreDevtoolsModule.instrument() : [],
+    !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   declarations: [
     AppComponent,
